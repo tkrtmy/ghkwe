@@ -1,7 +1,7 @@
 # ghkwe
 
 [![GitHub release](https://img.shields.io/github/release/tkrtmy/ghkwe.svg?style=flat-square)][release]
-[![Travis](https://travis-ci.org/tkrtmy/ghkwe.svg?branch=master)](https://travis-ci.org/tkrtmy/ghkwe)
+[![Travis](https://api.travis-ci.com/tkrtmy/ghkwe.svg?branch=master)](https://travis-ci.com/tkrtmy/ghkwe)
 [![Go Documentation](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)][godocs]
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)][license]
 

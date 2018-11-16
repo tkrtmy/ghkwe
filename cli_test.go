@@ -12,7 +12,7 @@ func TestRun(t *testing.T) {
 	cli := &CLI{outStream: outStream, errStream: errStream}
 
 	command := fmt.Sprintf(
-		"ghkw -debug=true %s %s %s",
+		"ghkwe -debug=true %s %s %s",
 		"exclusion_condition",
 		"exclude_condition",
 		"excluded_condition")

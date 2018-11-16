@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/github/hub/github"
+	"github.com/github/hub/ui"
 	api "github.com/google/go-github/github"
 	"github.com/mattn/go-colorable"
 	"github.com/mitchellh/colorstring"
@@ -25,7 +27,7 @@ import (
 
 const (
 	// EnvDebug is environmental var to handle debug mode
-	EnvDebug = "GHKW_DEBUG"
+	EnvDebug = "GHKWE_DEBUG"
 )
 
 // Exit codes are in value that represnet an exit code for a paticular error
@@ -242,25 +244,31 @@ func (s *Searcher) output(outStream io.Writer) {
 	table.Render()
 }
 
-func getAccessTokenFromConf() (string, error) {
+func getAccessHost() (host *github.Host, err error) {
 	homeDir, err := homedir.Dir()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	confPath := filepath.Join(homeDir, ".config", "ghkw")
+	confPath := filepath.Join(homeDir, ".config", "ghkwe")
 	err = os.Setenv("HUB_CONFIG", confPath)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	c := github.CurrentConfig()
-	host, err := c.DefaultHost()
+	if len(c.Hosts) <= 0 {
+		ui.Printf("Your github enterprise HOST(ex.github.hoge.jp): ")
+		hostName := scanLine()
+		host, err = c.PromptForHost(hostName)
+	} else {
+		host, err = c.DefaultHost()
+	}
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return host.AccessToken, nil
+	return host, nil
 }
 
 func getAccessToken() (string, error) {
@@ -269,12 +277,12 @@ func getAccessToken() (string, error) {
 		return token, nil
 	}
 
-	token, err := getAccessTokenFromConf()
+	host, err := getAccessHost()
 	if err != nil {
 		return "", err
 	}
 
-	return token, nil
+	return host.AccessToken, nil
 }
 
 func sanitizeKeyword(keyword string) string {
@@ -293,7 +301,14 @@ func NewClient(keywords []string, searchTerm SearchTerm) (*Searcher, error) {
 	)
 	tc := oauth2.NewClient(context.Background(), ts)
 
-	client := api.NewClient(tc)
+	host, err := getAccessHost()
+	if err != nil {
+		return nil, err
+	}
+	// FIXME: be able to chose API path, now path is fixed(/api/v3)
+	baseURL := host.Protocol + "://" + host.Host + "/api/v3"
+
+	client, _ := api.NewEnterpriseClient(baseURL, baseURL, tc)
 	repo, _ := Repository(client)
 
 	keywordsWithTotal := map[string]int{}
@@ -329,9 +344,23 @@ func Repository(client *api.Client) (*api.Repository, error) {
 	return repo, err
 }
 
-var helpText = `Usage: ghkw [options...] [keyword ...]
+func scanLine() string {
+	var line string
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		line = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		ui.Errorln(err)
+		os.Exit(1)
+	}
 
-ghkw is a tool to know how many keyword is used in GitHub code.
+	return line
+}
+
+var helpText = `Usage: ghkwe [options...] [keyword ...]
+
+ghkwe is a tool to know how many keyword is used in GitHub code.
 
 You must specify keyword what you want to know keyword.
 
@@ -368,7 +397,7 @@ Options:
       https://developer.github.com/v3/search/#parameters-2
 
 Examples:
-    The following is how to do ghkw search "exclude_condition" and "exclusion_condition" with search option in the file contents, language is javascript and file size is over 1,000bytes.
+    The following is how to do ghkwe search "exclude_condition" and "exclusion_condition" with search option in the file contents, language is javascript and file size is over 1,000bytes.
 
-    ghkw --in=file --language=javascript --size=">1000" exclude_condition exclusion_condition
+    ghkwe --in=file --language=javascript --size=">1000" exclude_condition exclusion_condition
 `

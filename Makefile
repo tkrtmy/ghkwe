@@ -1,4 +1,4 @@
-PROJECT_NAME=ghkw
+PROJECT_NAME=ghkwe
 INTERNAL_BIN_DIR=_internal_bin
 GOVERSION=$(shell go version)
 GOOS=$(word 1,$(subst /, ,$(lastword $(GOVERSION))))

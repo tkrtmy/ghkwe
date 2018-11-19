@@ -11,7 +11,7 @@
 
 **ghkwe** is **G**it**H**ub **K**ey**W**ord for **E**nterprise.
 
-Forked from [kyoshidajp/ghkw](https://github.com/kyoshidajp/ghkw}
+Forked from [kyoshidajp/ghkw](https://github.com/kyoshidajp/ghkw)
 
 Search how many keywords in GitHub Code by GitHub API.
 

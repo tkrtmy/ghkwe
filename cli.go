@@ -258,7 +258,7 @@ func getAccessHost() (host *github.Host, err error) {
 
 	c := github.CurrentConfig()
 	if len(c.Hosts) <= 0 {
-		ui.Printf("Your github enterprise HOST(ex.github.hoge.jp): ")
+		ui.Printf("Your github enterprise HOST(ex. github.hoge.jp): ")
 		hostName := scanLine()
 		if hostName == "" {
 			// if input empty string, use github.com

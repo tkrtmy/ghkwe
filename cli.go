@@ -310,10 +310,19 @@ func NewClient(keywords []string, searchTerm SearchTerm) (*Searcher, error) {
 	if err != nil {
 		return nil, err
 	}
-	// FIXME: be able to chose API path, now path is fixed(/api/v3)
-	baseURL := host.Protocol + "://" + host.Host + "/api/v3"
 
-	client, _ := api.NewEnterpriseClient(baseURL, baseURL, tc)
+	var client *api.Client
+	if host.Host != "github.com" {
+		// FIXME: be able to chose API path, now path is fixed(/api/v3)
+		baseURL := host.Protocol + "://" + host.Host + "/api/v3"
+		client, err = api.NewEnterpriseClient(baseURL, baseURL, tc)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		client = api.NewClient(tc)
+	}
+
 	repo, _ := Repository(client)
 
 	keywordsWithTotal := map[string]int{}

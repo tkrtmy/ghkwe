@@ -18,3 +18,14 @@ install:
 
 script:
   - make test-all
+
+before_deploy:
+  - go get github.com/tcnksm/ghr
+  - echo $GITHUB_TOKEN > github_token
+
+deploy:
+  provider: script
+  script: make release-upload
+  on:
+    tags: true
+    branch: master

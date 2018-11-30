@@ -1,6 +1,11 @@
 Changes
 =======
 
+v0.1.1
+  First release as ghkwe
+  Features:
+  * Support github enterprise
+
 v0.1.0
   Features:
   * Support all of code search qualifiers

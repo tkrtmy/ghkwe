@@ -8,7 +8,7 @@ RELEASE_DIR=releases
 ARTIFACTS_DIR=$(RELEASE_DIR)/artifacts/$(VERSION)
 PACKAGES = $(shell go list ./... | grep -v '/vendor/')
 SRC_FILES = $(wildcard *.go)
-GITHUB_USERNAME=kyoshidajp
+GITHUB_USERNAME=tkrtmy
 BUILD_TARGETS= \
 	build-linux-arm64 \
 	build-linux-arm \
